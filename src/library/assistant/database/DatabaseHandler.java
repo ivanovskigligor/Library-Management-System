@@ -7,55 +7,99 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import netscape.javascript.JSException;
+import javax.swing.JOptionPane;
 
 public class DatabaseHandler {
 
-	private static DatabaseHandler handler;
-	private static final String DB_URL = "jdbc:derby:database;create=true";
+	private static DatabaseHandler handler = null;
+	private static final String DB_URL = "jdbc:derby:mydb;create=true";
+
 	private static Connection conn = null;
 	private static Statement stmt = null;
-	
+
 	public DatabaseHandler() {
+
+		System.out.println("DatabaseHandler constructor called.");
 		createConnection();
-		setupBooksTable();	
+		setupBooksTable();
 	}
-	
-	
-	void createConnection() {
-		try (Connection conn = DriverManager.getConnection(DB_URL)) {
-	        if (conn != null) {
-	            
-	        }
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
+
+	public static DatabaseHandler getInstance() {
+		if (handler == null) {
+			handler = new DatabaseHandler();
+		}
+		return handler;
 	}
-	
-	void setupBooksTable() {
+
+	private static void createConnection() {
+		try {
+			// If using newer Derby versions, Class.forName might not be necessary
+			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
+			conn = DriverManager.getConnection(DB_URL);
+		} catch (Exception e) {
+			e.printStackTrace();  // Print stack trace for more details
+	        JOptionPane.showMessageDialog(null, "Can't load database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+	        System.exit(0);
+		}
+	}
+
+	private static void setupBooksTable() {
+
 		String TABLE_NAME = "BOOK";
-		try{
+		try {
 			stmt = conn.createStatement();
 			DatabaseMetaData dbm = conn.getMetaData();
 			ResultSet tables = dbm.getTables(null, null, TABLE_NAME.toUpperCase(), null);
-			if(tables.next() ) {
-				System.out.println("Table " + TABLE_NAME + "already exists.");
+			if (tables.next()) {
+				System.out.println("Table " + TABLE_NAME + " already exists.");
 			} else {
-				stmt.execute("CREATE TABLE " + TABLE_NAME +  "("
-						+ " id varchar(200) primary key, \n"
-						+ " title varchar(200) primary key, \n"
-						+ " author varchar(200), \n"
+				stmt.execute("CREATE TABLE " + TABLE_NAME + "(" 
+						+ " id varchar(200) PRIMARY KEY, \n"
+						+ " title varchar(200), \n" 
+						+ " author varchar(200), \n" 
 						+ " publisher varchar(200), \n"
-						+ " intcode varchar(100), \n"
-						+ " isAvail boolean default true"
+						+ " isAvail boolean DEFAULT true" 
 						+ " )");
+				System.out.println("Table " + TABLE_NAME + " created successfully.");
 			}
-		} catch(SQLException e) {
-			System.out.println(e.getMessage() + "--- setupDatabase");
+		} catch (SQLException e) {
+			System.out.println("SQL Error: " + e.getMessage() + " --- setupBooksTable");
 		} finally {
-			
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Failed to close statement: " + e.getMessage());
+			}
 		}
-		
 	}
-	
+
+	public ResultSet execQuery(String query) {
+		ResultSet result = null;
+		try {
+			stmt = conn.createStatement();
+			result = stmt.executeQuery(query);
+
+		} catch (SQLException e) {
+			System.out.println("Exception at execQuery:dataHandler" + e.getLocalizedMessage());
+			return null;
+		}
+		return result;
+
+	}
+
+	public boolean execAction(String query) {
+
+		try {
+			stmt = conn.createStatement();
+			stmt.execute(query);
+			return true;
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Error:" + e.getMessage(), "Error occured", JOptionPane.ERROR_MESSAGE);
+			System.out.println("Exception at execQuery:dataHandler" + e.getLocalizedMessage());
+			return false;
+		}
+
+	}
+
 }
