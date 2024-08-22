@@ -1,7 +1,10 @@
 package library.assistant.ui.addbook;
 
 import java.net.URL;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
+
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -9,20 +12,26 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
 import library.assistant.database.DatabaseHandler;
 
 public class AddBookController implements Initializable {
+	
+    @FXML
+    private AnchorPane rootPanel;
+    
+    @FXML
+    private TextField booktitle;
+    
+    @FXML
+    private TextField bookid;
+    
 	@FXML
     private TextField bookauthor;
 
     @FXML
-    private TextField bookid;
-
-    @FXML
     private TextField bookpublisher;
-
-    @FXML
-    private TextField booktitle;
 
     @FXML
     private Button cancelbutton;
@@ -34,10 +43,27 @@ public class AddBookController implements Initializable {
     DatabaseHandler databaseHandler;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        databaseHandler = new DatabaseHandler();
+        databaseHandler = DatabaseHandler.getInstance();
+        checkData();
+        
+   
     }
     
-    @FXML
+    private void checkData() {
+		String query = "SELECT title FROM BOOK";
+		ResultSet rs = databaseHandler.execQuery(query);
+		try {
+			while(rs.next()) {
+				String title =rs.getString("title");
+				System.out.println(title);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@FXML
     void addBook(ActionEvent event) {
     	String bookID = bookid.getText();
     	String bookAuthor = bookauthor.getText();
@@ -53,9 +79,9 @@ public class AddBookController implements Initializable {
     		
     	}
     	String query = "INSERT INTO BOOK VALUES (" +
-    			 "'" + bookID + "'," +
     			 "'" + bookAuthor + "'," +
     			 "'" + bookName + "'," +
+    			 "'" + bookID + "'," +
     			 "'" + bookPublisher + "'," +
     			 "'" + "true" + "'" +
 				 " )";
@@ -78,7 +104,8 @@ public class AddBookController implements Initializable {
 
     @FXML
     void cancel(ActionEvent event) {
-
+    	Stage stage = (Stage) rootPanel.getScene().getWindow();
+    	stage.close();
     }
 
 }

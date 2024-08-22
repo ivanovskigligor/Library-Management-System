@@ -17,11 +17,12 @@ public class DatabaseHandler {
 	private static Connection conn = null;
 	private static Statement stmt = null;
 
-	public DatabaseHandler() {
+	private DatabaseHandler() {
 
-		System.out.println("DatabaseHandler constructor called.");
 		createConnection();
 		setupBooksTable();
+		setupMemberTable();
+		
 	}
 
 	public static DatabaseHandler getInstance() {
@@ -73,7 +74,36 @@ public class DatabaseHandler {
 			}
 		}
 	}
-
+	
+	private void setupMemberTable() {
+		// TODO Auto-generated method stub
+		String TABLE_NAME = "MEMBER";
+		try {
+			stmt = conn.createStatement();
+			DatabaseMetaData dbm = conn.getMetaData();
+			ResultSet tables = dbm.getTables(null, null, TABLE_NAME.toUpperCase(), null);
+			if (tables.next()) {
+				System.out.println("Table " + TABLE_NAME + " already exists.");
+			} else {
+				stmt.execute("CREATE TABLE " + TABLE_NAME + "(" 
+						+ " id varchar(200) PRIMARY KEY, \n"
+						+ " name varchar(200), \n" 
+						+ " mobile varchar(20), \n" 
+						+ " email varchar(100) \n"
+						+ " )");
+				System.out.println("Table " + TABLE_NAME + " created successfully.");
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error: " + e.getMessage() + " --- setupMembersTable");
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Failed to close statement: " + e.getMessage());
+			}
+		}
+	}
 	public ResultSet execQuery(String query) {
 		ResultSet result = null;
 		try {
