@@ -79,9 +79,9 @@ public class AddBookController implements Initializable {
     		
     	}
     	String query = "INSERT INTO BOOK VALUES (" +
-    			 "'" + bookAuthor + "'," +
-    			 "'" + bookName + "'," +
     			 "'" + bookID + "'," +
+    			 "'" + bookName + "'," +
+    			 "'" + bookAuthor + "'," +
     			 "'" + bookPublisher + "'," +
     			 "'" + "true" + "'" +
 				 " )";

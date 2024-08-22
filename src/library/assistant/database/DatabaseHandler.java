@@ -22,7 +22,7 @@ public class DatabaseHandler {
 		createConnection();
 		setupBooksTable();
 		setupMemberTable();
-		
+		setupIssueTable();
 	}
 
 	public static DatabaseHandler getInstance() {
@@ -104,6 +104,41 @@ public class DatabaseHandler {
 			}
 		}
 	}
+	
+	private static void setupIssueTable() {
+
+		String TABLE_NAME = "ISSUE";
+		try {
+			stmt = conn.createStatement();
+			DatabaseMetaData dbm = conn.getMetaData();
+			
+			ResultSet tables = dbm.getTables(null, null, TABLE_NAME.toUpperCase(), null);
+			if (tables.next()) {
+				System.out.println("Table " + TABLE_NAME + " already exists.");
+			} else {
+				stmt.execute("CREATE TABLE " + TABLE_NAME + "("
+					    + "bookID varchar(200) PRIMARY KEY, \n"
+					    + "memberID varchar(200), \n"
+					    + "issueTime timestamp default CURRENT_TIMESTAMP, \n"
+					    + "renewCount integer default 0, \n"
+					    + "FOREIGN KEY (bookID) REFERENCES BOOK(id), \n"
+					    + "FOREIGN KEY (memberID) REFERENCES MEMBER(id) \n"
+					    + ")");
+
+				System.out.println("Table " + TABLE_NAME + " created successfully.");
+			}
+		} catch (SQLException e) {
+			System.out.println("SQL Error: " + e.getMessage() + " --- setupIssueTable");
+		} finally {
+			try {
+				if (stmt != null)
+					stmt.close();
+			} catch (SQLException e) {
+				System.out.println("Failed to close statement: " + e.getMessage());
+			}
+		}
+	}
+	
 	public ResultSet execQuery(String query) {
 		ResultSet result = null;
 		try {

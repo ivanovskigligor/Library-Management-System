@@ -20,7 +20,10 @@ public class MainMenuLoader extends Application{
         stage.setScene(scene);
         stage.show();
         
-        DatabaseHandler.getInstance();
+        new Thread(() -> {
+        	
+        	DatabaseHandler.getInstance();
+        }).start();
 	}
 	
 	
