@@ -287,6 +287,45 @@ public class MainMenuController implements Initializable {
 		}
 			
 	}
+	
+	@FXML
+	void loadRenew(ActionEvent event) {
+		
+		if (!readyForSubmission) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Failed");
+			alert.setHeaderText(null);
+			alert.setContentText("Please select book to renew");
+			alert.showAndWait();
+			return;
+		}
+		
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle("Confirm Operation");
+		alert.setHeaderText(null);
+		alert.setContentText("Are you sure you want to renew the book?");
+		
+		Optional<ButtonType> response = alert.showAndWait();
+
+		if (response.get() == ButtonType.OK) {
+			String ac = "UPDATE ISSUE SET issueTime = CURRENT_TIMESTAMP, renewCount = renewCount+1 WHERE bookID = '" + bookID.getText() + "'";
+			System.out.println(ac);
+			if (databaseHandler.execAction(ac)) {
+				Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
+				alert1.setTitle("Success");
+				alert1.setHeaderText(null);
+				alert1.setContentText("Book Has Been Renewed");
+				alert1.showAndWait();
+			} else {
+				Alert alert1 = new Alert(Alert.AlertType.ERROR);
+				alert1.setTitle("Failed");
+				alert1.setHeaderText(null);
+				alert1.setContentText("Renew has failed");
+				alert1.showAndWait();
+			}
+		
+		}
+	}
 
 	void clearBookCache() {
 

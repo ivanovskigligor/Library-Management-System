@@ -43,5 +43,6 @@
 	<classpathentry kind="lib" path="C:/Program Files/Java/db-derby-10.17.1.0-lib/lib/derbyshared.jar"/>
 	<classpathentry kind="lib" path="C:/Program Files/Java/db-derby-10.17.1.0-lib/lib/derbytools.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Gligor/Downloads/jfoenix-9.0.10.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gligor/Downloads/gson-2.11.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

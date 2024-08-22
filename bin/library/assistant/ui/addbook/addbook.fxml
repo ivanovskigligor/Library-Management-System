@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="rootPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="362.0" prefWidth="452.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.assistant.ui.addbook.AddBookController">
+   <children>
+      <VBox prefHeight="300.0" prefWidth="452.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TextField fx:id="booktitle" prefHeight="26.0" prefWidth="519.0" promptText="Book Title">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <TextField fx:id="bookid" promptText="Book ID">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <TextField fx:id="bookauthor" promptText="Book Author">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextField>
+            <TextField fx:id="bookpublisher" prefWidth="579.0" promptText="Publisher">
+               <VBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </VBox.margin>
+            </TextField>
+         </children>
+      </VBox>
+      <HBox layoutX="-1.0" layoutY="295.0" prefHeight="66.0" prefWidth="452.0">
+         <children>
+            <Button fx:id="cancelbutton" mnemonicParsing="false" onAction="#cancel" prefHeight="81.0" prefWidth="268.0" text="Cancel" />
+            <Button fx:id="savebutton" mnemonicParsing="false" onAction="#addBook" prefHeight="81.0" prefWidth="268.0" text="Save" />
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>
