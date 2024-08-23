@@ -14,7 +14,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import library.assistant.alert.AlertMaker;
 import library.assistant.database.DatabaseHandler;
+import library.assistant.ui.listbooks.ListBooksController;
 
 public class AddBookController implements Initializable {
 	
@@ -40,6 +42,8 @@ public class AddBookController implements Initializable {
     private Button savebutton;
 
 
+    private Boolean editMode = Boolean.FALSE;
+    
     DatabaseHandler databaseHandler;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -78,6 +82,11 @@ public class AddBookController implements Initializable {
     		return;
     		
     	}
+    	
+    	if(editMode) {
+    		handleEdit();
+    		return;
+    	}
     	String query = "INSERT INTO BOOK VALUES (" +
     			 "'" + bookID + "'," +
     			 "'" + bookName + "'," +
@@ -102,10 +111,31 @@ public class AddBookController implements Initializable {
    
     }
 
-    @FXML
+    private void handleEdit() {
+
+    	ListBooksController.Book book = new ListBooksController.Book(booktitle.getText(), bookid.getText(), bookauthor.getText(), bookpublisher.getText(), true);
+		if(databaseHandler.updateBook(book)) {
+			AlertMaker.showSimpleAlert("Success", "Book Updated");
+			
+		} else {
+			AlertMaker.showErrorMessage("Failed", "Book Update Failed");
+		}
+	}
+
+	@FXML
     void cancel(ActionEvent event) {
     	Stage stage = (Stage) rootPanel.getScene().getWindow();
     	stage.close();
+    }
+    
+    public void inflateUI(ListBooksController.Book book) {
+    	
+    	editMode = Boolean.TRUE;
+    	booktitle.setText(book.getTitle());
+    	bookid.setText(book.getId());
+    	bookauthor.setText(book.getAuthor());
+    	bookpublisher.setText(book.getPublisher());
+    	bookid.setEditable(false);
     }
 
 }

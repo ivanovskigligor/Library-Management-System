@@ -4,6 +4,10 @@ package library.assistant.ui.mainmenu;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.event.EventType;
+
+import javafx.event.Event;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
@@ -15,7 +19,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import com.jfoenix.controls.JFXDrawer;
+import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.effects.JFXDepthManager;
+import com.jfoenix.transitions.hamburger.HamburgerSlideCloseTransition;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,8 +33,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -69,6 +78,12 @@ public class MainMenuController implements Initializable {
 	private HBox member_info;
 	
     @FXML
+    private JFXHamburger hamburger;
+    
+    @FXML
+    private JFXDrawer drawer;
+    
+    @FXML
     private StackPane rootPane;
 
 	DatabaseHandler databaseHandler;
@@ -81,7 +96,10 @@ public class MainMenuController implements Initializable {
 		JFXDepthManager.setDepth(book_info, 1);
 		JFXDepthManager.setDepth(member_info, 1);
 		databaseHandler = DatabaseHandler.getInstance();
+		initDrawer();
 	}
+
+
 
 	@FXML
 	void loadAddBook(ActionEvent event) {
@@ -344,7 +362,6 @@ public class MainMenuController implements Initializable {
 				alert1.setHeaderText(null);
 				alert1.setContentText("Book Has Been Renewed");
 				alert1.showAndWait();
-//				loadBookInfo2();
 			} else {
 				Alert alert1 = new Alert(Alert.AlertType.ERROR);
 				alert1.setTitle("Failed");
@@ -382,5 +399,30 @@ public class MainMenuController implements Initializable {
 			e.printStackTrace();
 		}
 	}
-	 
+	private void initDrawer() {
+		try {
+			VBox toolbar = FXMLLoader.load(getClass().getResource("/library/assistant/ui/mainmenu/toolbar/Toolbar.fxml"));
+			drawer.setSidePane(toolbar);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		HamburgerSlideCloseTransition task = new HamburgerSlideCloseTransition(hamburger);
+		task.setRate(-1);
+		hamburger.addEventHandler(MouseEvent.MOUSE_CLICKED, (Event e) -> {
+
+				// animation
+				task.setRate(task.getRate() * -1);
+				task.play();
+				System.out.println(drawer.isClosed());
+				if(drawer.isClosed()) {
+					drawer.open();
+					drawer.setMinWidth(100);
+				} else {
+					drawer.close();
+				}
+				
+			
+		});
+	}
 }

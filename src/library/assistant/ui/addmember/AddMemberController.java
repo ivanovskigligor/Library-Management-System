@@ -7,7 +7,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import library.assistant.alert.AlertMaker;
 import library.assistant.database.DatabaseHandler;
+import library.assistant.ui.listbooks.ListBooksController;
+import library.assistant.ui.listmember.ListMembersController;
+import library.assistant.ui.listmember.ListMembersController.Member;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -39,6 +43,8 @@ public class AddMemberController implements Initializable {
 	@FXML
 	private AnchorPane rootPanel;
 
+	private Boolean editMode = false;
+	
 	@FXML
 	void addMember(ActionEvent event) {
 
@@ -48,13 +54,14 @@ public class AddMemberController implements Initializable {
 		String memail = memberemail.getText();
 
 		if (mname.isEmpty() || mid.isEmpty() || mphone.isEmpty() || memail.isEmpty()) {
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setHeaderText(null);
-			alert.setContentText("Enter information in all fields");
-			alert.showAndWait();
+			AlertMaker.showErrorMessage("Can't process member", "Please enter in all fields");
 			return;
 		}
 
+		if(editMode) {
+			handleUpdateMember();
+			return;
+		}
 		String query = "INSERT INTO MEMBER VALUES (" + "'" + mid + "'," + "'" + mname + "'," + "'" + mphone + "'," + "'"
 				+ memail + "'" + " )";
 		System.out.println(query);
@@ -72,12 +79,32 @@ public class AddMemberController implements Initializable {
 
 	}
 
+	private void handleUpdateMember() {
+
+		Member member = new ListMembersController.Member(membername.getText(), memberid.getText(), memberphone.getText(), memberemail.getText());
+		if(DatabaseHandler.getInstance().updateMember(member)) {
+			AlertMaker.showSimpleAlert("Success", "Member Updated");
+			
+		} else {
+			AlertMaker.showErrorMessage("Failed", "Member Update Failed");
+		}
+		
+	}
+
 	@FXML
 	void cancel(ActionEvent event) {
 		Stage stage = (Stage) rootPanel.getScene().getWindow();
 		stage.close();
 	}
 
+	public void inflateUI(Member member) {
+		membername.setText(member.getName());
+		memberid.setText(member.getId());
+		memberid.setEditable(false);
+		memberphone.setText(member.getMobile());
+		memberemail.setText(member.getEmail());
+		editMode = Boolean.TRUE;
+	}
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO Auto-generated method stub

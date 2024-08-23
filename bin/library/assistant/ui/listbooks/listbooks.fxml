@@ -24,6 +24,12 @@
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#handleBookDelete" text="Delete" />
               </items>
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleBookEdit" text="Edit" />
+              </items>
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleRefresh" text="Refresh" />
+              </items>
             </ContextMenu>
          </contextMenu>
       </TableView>

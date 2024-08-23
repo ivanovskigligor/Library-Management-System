@@ -11,6 +11,7 @@ import java.sql.Statement;
 import javax.swing.JOptionPane;
 
 import library.assistant.ui.listbooks.ListBooksController.Book;
+import library.assistant.ui.listmember.ListMembersController.Member;
 
 public class DatabaseHandler {
 
@@ -202,6 +203,44 @@ public class DatabaseHandler {
 					return false;
 				}
 			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean updateBook(Book book) {
+		String update = "UPDATE BOOK SET TITLE = ?, AUTHOR = ?, PUBLISHER =? WHERE ID = ?";
+		try {
+			PreparedStatement stmt = conn.prepareStatement(update);
+			stmt.setString(1, book.getTitle());
+			stmt.setString(2, book.getAuthor());
+			stmt.setString(3, book.getPublisher());
+			stmt.setString(4, book.getId());
+			int res = stmt.executeUpdate();
+			
+			return (res==1);
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean updateMember(Member member) {
+		String update = "UPDATE MEMBER SET NAME = ?, MOBILE = ?, EMAIL =? WHERE ID = ?";
+		try {
+			PreparedStatement stmt = conn.prepareStatement(update);
+			stmt.setString(1, member.getName());
+			stmt.setString(2, member.getMobile());
+			stmt.setString(3, member.getEmail());
+			stmt.setString(4, member.getId());
+			int res = stmt.executeUpdate();
+			
+			return (res==1);
 			
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

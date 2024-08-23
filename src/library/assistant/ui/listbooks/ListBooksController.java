@@ -1,5 +1,6 @@
 package library.assistant.ui.listbooks;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,15 +13,22 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import library.assistant.alert.AlertMaker;
 import library.assistant.database.DatabaseHandler;
+import library.assistant.ui.addbook.AddBookController;
+import library.assistant.util.LibraryAssistantUtil;
 
 public class ListBooksController implements Initializable {
 
@@ -59,6 +67,7 @@ public class ListBooksController implements Initializable {
 	private void loadData() {
 		// TODO Auto-generated method stub
 
+		list.clear();
 		databaseHandler = DatabaseHandler.getInstance();
 		String query = "SELECT * FROM BOOK";
 		ResultSet rs = databaseHandler.execQuery(query);
@@ -119,6 +128,7 @@ public class ListBooksController implements Initializable {
 			if(result) {
 				AlertMaker.showSimpleAlert("Book deleted", selectedForDeletion.getTitle() + " was deleted successfuly");
 				list.remove(selectedForDeletion);
+				
 			} else {
 				AlertMaker.showSimpleAlert("Failed. ", selectedForDeletion.getTitle() + " could not be deleted");
 			}
@@ -126,7 +136,41 @@ public class ListBooksController implements Initializable {
 			AlertMaker.showSimpleAlert("Deletion cancelled", "Process cancelled");
 		}
 	}
+	@FXML
+	void handleBookEdit(ActionEvent event) {
+		Book selectedForEdit = tableView.getSelectionModel().getSelectedItem();
+		if(selectedForEdit == null) {
+			AlertMaker.showErrorMessage("No book selected", "Please select book");
+			return;
+		}
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/library/assistant/ui/addbook/addbook.fxml"));
+			Parent parent = loader.load();
+			
+			AddBookController controller = (AddBookController) loader.getController();
+			controller.inflateUI(selectedForEdit);
+			Stage stage = new Stage(StageStyle.DECORATED);
+			stage.setTitle("Edit book");
+			stage.setScene(new Scene(parent));
+			stage.show();
+			LibraryAssistantUtil.setStageIcon(stage);
+			stage.setOnCloseRequest((e) -> {
 
+				handleRefresh(new ActionEvent());
+				
+			});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+
+	@FXML
+	void handleRefresh(ActionEvent event) {
+		loadData();
+	}
+	
 	public static class Book {
 		private final SimpleStringProperty title;
 		private final SimpleStringProperty id;
@@ -134,7 +178,7 @@ public class ListBooksController implements Initializable {
 		private final SimpleStringProperty publisher;
 		private final SimpleBooleanProperty availability;
 
-		Book(String title, String id, String author, String publisher, Boolean availability) {
+		public Book(String title, String id, String author, String publisher, Boolean availability) {
 			this.title = new SimpleStringProperty(title);
 			this.id = new SimpleStringProperty(id);
 			this.author = new SimpleStringProperty(author);
