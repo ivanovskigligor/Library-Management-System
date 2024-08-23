@@ -27,10 +27,13 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import library.assistant.database.DatabaseHandler;
+import library.assistant.util.LibraryAssistantUtil;
 
 public class MainMenuController implements Initializable {
 
@@ -61,10 +64,15 @@ public class MainMenuController implements Initializable {
 
 	@FXML
 	private HBox book_info;
+	
 	@FXML
 	private HBox member_info;
+	
+    @FXML
+    private StackPane rootPane;
 
 	DatabaseHandler databaseHandler;
+
 	Boolean readyForSubmission = false;
 
 	@Override
@@ -98,6 +106,25 @@ public class MainMenuController implements Initializable {
 		loadWindow("/library/assistant/ui/listmember/ListMembers.fxml", "List Members");
 	}
 
+	@FXML
+	void loadSettings(ActionEvent event) {
+		loadWindow("/library/assistant/settings/Settings.fxml", "Settings");
+
+	}
+
+	@FXML
+    void handleMenuClose(ActionEvent event) {
+		((Stage)rootPane.getScene().getWindow()).close();
+    }
+	
+	@FXML
+    void handleMenuFullScreen(ActionEvent event) {
+		
+		Stage stage = (Stage)rootPane.getScene().getWindow();
+		stage.setFullScreen(!stage.isFullScreen());
+    }
+	
+	
 	@FXML
 	void loadBookInfo(ActionEvent event) {
 		clearBookCache();
@@ -258,7 +285,7 @@ public class MainMenuController implements Initializable {
 		alert.setTitle("Confirm Operation");
 		alert.setHeaderText(null);
 		alert.setContentText("Are you sure you want to return the book?");
-		
+
 		Optional<ButtonType> response = alert.showAndWait();
 
 		if (response.get() == ButtonType.OK) {
@@ -278,19 +305,19 @@ public class MainMenuController implements Initializable {
 				alert1.setContentText("Submmition has failed");
 				alert1.showAndWait();
 			}
-		} else if (response.get() == ButtonType.CANCEL){
+		} else if (response.get() == ButtonType.CANCEL) {
 			Alert alert1 = new Alert(Alert.AlertType.ERROR);
 			alert1.setTitle("Failed");
 			alert1.setHeaderText(null);
 			alert1.setContentText("Canceled");
 			alert1.showAndWait();
 		}
-			
+
 	}
-	
+
 	@FXML
 	void loadRenew(ActionEvent event) {
-		
+
 		if (!readyForSubmission) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
 			alert.setTitle("Failed");
@@ -299,16 +326,17 @@ public class MainMenuController implements Initializable {
 			alert.showAndWait();
 			return;
 		}
-		
+
 		Alert alert = new Alert(Alert.AlertType.INFORMATION);
 		alert.setTitle("Confirm Operation");
 		alert.setHeaderText(null);
 		alert.setContentText("Are you sure you want to renew the book?");
-		
+
 		Optional<ButtonType> response = alert.showAndWait();
 
 		if (response.get() == ButtonType.OK) {
-			String ac = "UPDATE ISSUE SET issueTime = CURRENT_TIMESTAMP, renewCount = renewCount+1 WHERE bookID = '" + bookID.getText() + "'";
+			String ac = "UPDATE ISSUE SET issueTime = CURRENT_TIMESTAMP, renewCount = renewCount+1 WHERE bookID = '"
+					+ bookID.getText() + "'";
 			System.out.println(ac);
 			if (databaseHandler.execAction(ac)) {
 				Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
@@ -316,6 +344,7 @@ public class MainMenuController implements Initializable {
 				alert1.setHeaderText(null);
 				alert1.setContentText("Book Has Been Renewed");
 				alert1.showAndWait();
+//				loadBookInfo2();
 			} else {
 				Alert alert1 = new Alert(Alert.AlertType.ERROR);
 				alert1.setTitle("Failed");
@@ -323,7 +352,7 @@ public class MainMenuController implements Initializable {
 				alert1.setContentText("Renew has failed");
 				alert1.showAndWait();
 			}
-		
+
 		}
 	}
 
@@ -347,10 +376,11 @@ public class MainMenuController implements Initializable {
 			stage.setTitle(title);
 			stage.setScene(new Scene(parent));
 			stage.show();
+			LibraryAssistantUtil.setStageIcon(stage);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-
+	 
 }

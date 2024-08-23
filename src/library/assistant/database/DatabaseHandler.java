@@ -3,11 +3,14 @@ package library.assistant.database;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.swing.JOptionPane;
+
+import library.assistant.ui.listbooks.ListBooksController.Book;
 
 public class DatabaseHandler {
 
@@ -38,8 +41,8 @@ public class DatabaseHandler {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 			conn = DriverManager.getConnection(DB_URL);
 		} catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "Can't load database: ", "Database Error", JOptionPane.ERROR_MESSAGE);
 			e.printStackTrace();  // Print stack trace for more details
-	        JOptionPane.showMessageDialog(null, "Can't load database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
 	        System.exit(0);
 		}
 	}
@@ -166,5 +169,44 @@ public class DatabaseHandler {
 		}
 
 	}
+	
+	public boolean deleteBook(Book book) {
+		
+		try {
+			String deleteStatement = "DELETE FROM BOOK WHERE ID = ?";
+			PreparedStatement stmt = conn.prepareStatement(deleteStatement);
+			stmt.setString(1, book.getId());		
+			int res = stmt.executeUpdate();
+			if(res == 1) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 
+	public boolean isBookAlreadyIssued(Book book) {
+		try {
+			String issuedStatement = "SELECT COUNT(*) FROM ISSUE WHERE bookid = ?";
+			PreparedStatement stmt = conn.prepareStatement(issuedStatement);
+			stmt.setString(1, book.getId());
+			ResultSet rs = stmt.executeQuery();
+			if(rs.next()) {
+				int count = rs.getInt(1);
+				System.out.println(count);
+				if(count>0) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 }
