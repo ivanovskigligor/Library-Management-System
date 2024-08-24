@@ -37,7 +37,7 @@
     -fx-text-fill: -fx-primarytext;
     -fx-font-size : 12pt;
     -jfx-focus-color: -fx-secondary;
-    -fx-text-fill: derive(-fx-secondary, 20%);
+    -fx-text-fill: derive(black, 20%);
 }
 
 /*Login Screen Specific*/
@@ -65,7 +65,7 @@
 
 .tab-label{
     -fx-text-fill: -fx-secondary;
-    -fx-font-size: 10pt; 
+    -fx-font-size: 15pt; 
 }
 
 
@@ -141,6 +141,16 @@
     -fx-font-size: 14pt;
     -fx-text-alignment: center;
 }
+
+.main-text-fields
+{
+    -fx-text-fill: -fx-primarytext;
+    -fx-background-color: -fx-primary;
+    -fx-fill: -fx-secondary;
+    -fx-font-size: 14pt;
+    -fx-text-alignment: center;
+}
+
 
 .submission-container{
     -fx-background-color: derive(-fx-primary, 10%);

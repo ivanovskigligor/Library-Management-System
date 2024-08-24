@@ -47,45 +47,76 @@ import library.assistant.util.LibraryAssistantUtil;
 public class MainMenuController implements Initializable {
 
 	@FXML
-	private Text bookAuthor;
+    private Text bookAuthor;
 
-	@FXML
-	private Text memberContact;
-
-	@FXML
-	private TextField memberIdInput;
-
-	@FXML
-	private Text memberName;
-
-	@FXML
-	private ListView<String> issueDataList;
-
-	@FXML
-	private TextField bookIdInput;
-	@FXML
-	private TextField bookID;
-	@FXML
-	private Text bookName;
-
-	@FXML
-	private Text bookStatus;
-
-	@FXML
-	private HBox book_info;
-	
-	@FXML
-	private HBox member_info;
-	
     @FXML
-    private JFXHamburger hamburger;
-    
+    private TextField bookAuthorHolder;
+
+    @FXML
+    private TextField bookID;
+
+    @FXML
+    private TextField bookIdInput;
+
+    @FXML
+    private Text bookName;
+
+    @FXML
+    private TextField bookNameHolder;
+
+    @FXML
+    private TextField bookPublisherHolder;
+
+    @FXML
+    private Text bookStatus;
+
+    @FXML
+    private HBox book_info;
+
     @FXML
     private JFXDrawer drawer;
-    
+
+    @FXML
+    private TextField fineInfoHolder;
+
+    @FXML
+    private JFXHamburger hamburger;
+
+    @FXML
+    private TextField issueDateHolder;
+
+    @FXML
+    private Text memberContact;
+
+    @FXML
+    private TextField memberContactHolder;
+
+    @FXML
+    private TextField memberEmailHolder;
+
+    @FXML
+    private TextField memberIdInput;
+
+    @FXML
+    private Text memberName;
+
+    @FXML
+    private TextField memberNameHolder;
+
+    @FXML
+    private HBox member_info;
+
+    @FXML
+    private TextField numberDaysHolder;
+
     @FXML
     private StackPane rootPane;
 
+    @FXML
+    private HBox submissionDataContainer;
+	@FXML
+	private ListView<String> issueDataList;
+	
 	DatabaseHandler databaseHandler;
 
 	Boolean readyForSubmission = false;
@@ -101,34 +132,7 @@ public class MainMenuController implements Initializable {
 
 
 
-	@FXML
-	void loadAddBook(ActionEvent event) {
-		loadWindow("/library/assistant/ui/addbook/addbook.fxml", "Add New Book");
-	}
 
-	@FXML
-	void loadAddMember(ActionEvent event) {
-
-		loadWindow("/library/assistant/ui/addmember/Addmember.fxml", "Add New Member");
-	}
-
-	@FXML
-	void loadBookTable(ActionEvent event) {
-
-		loadWindow("/library/assistant/ui/listbooks/listbooks.fxml", "List Books");
-	}
-
-	@FXML
-	void loadMemberTable(ActionEvent event) {
-
-		loadWindow("/library/assistant/ui/listmember/ListMembers.fxml", "List Members");
-	}
-
-	@FXML
-	void loadSettings(ActionEvent event) {
-		loadWindow("/library/assistant/settings/Settings.fxml", "Settings");
-
-	}
 
 	@FXML
     void handleMenuClose(ActionEvent event) {

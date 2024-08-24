@@ -7,7 +7,7 @@
 
 <VBox prefHeight="400.0" prefWidth="134.0" stylesheets="@../../../../../resources/dark-theme.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.assistant.ui.mainmenu.toolbar.ToolbarController">
    <children>
-      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadAddMember" prefHeight="150.0" prefWidth="134.0" stylesheets="@../../../../../resources/dark-theme.css" text="Add Member">
+      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadAddMember" prefHeight="150.0" prefWidth="134.0" styleClass="toolbar-button" stylesheets="@../../../../../resources/dark-theme.css" text="Add Member">
          <graphic>
             <ImageView fitHeight="30.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -16,7 +16,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadMemberTable" prefHeight="150.0" prefWidth="134.0" text="View Members">
+      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadMemberTable" prefHeight="150.0" prefWidth="134.0" styleClass="toolbar-button" text="View Members">
          <graphic>
             <ImageView fitHeight="30.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -25,7 +25,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadAddBook" prefHeight="150.0" prefWidth="134.0" text="Add Book">
+      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadAddBook" prefHeight="150.0" prefWidth="134.0" styleClass="toolbar-button" text="Add Book">
          <graphic>
             <ImageView fitHeight="30.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -34,7 +34,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadBookTable" prefHeight="150.0" prefWidth="134.0" text="View Books">
+      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadBookTable" prefHeight="150.0" prefWidth="134.0" styleClass="toolbar-button" text="View Books">
          <graphic>
             <ImageView fitHeight="30.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                <image>
@@ -43,7 +43,7 @@
             </ImageView>
          </graphic>
       </Button>
-      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadSettings" prefHeight="150.0" prefWidth="134.0" text="Settings">
+      <Button contentDisplay="TOP" mnemonicParsing="false" onAction="#loadSettings" prefHeight="150.0" prefWidth="134.0" styleClass="toolbar-button" text="Settings">
          <graphic>
             <ImageView fitHeight="30.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                <image>
