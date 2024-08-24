@@ -21,7 +21,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<StackPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="563.0" prefWidth="884.0" stylesheets="@../../../../resources/dark-theme.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.assistant.ui.mainmenu.MainMenuController">
+<StackPane fx:id="rootPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="621.0" prefWidth="978.0" stylesheets="@../../../../resources/dark-theme.css" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="library.assistant.ui.mainmenu.MainMenuController">
    <children>
       <BorderPane fx:id="rootBorderPane" prefHeight="200.0" prefWidth="200.0">
          <top>
@@ -50,7 +50,7 @@
                <children>
                   <TabPane prefHeight="417.0" prefWidth="547.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <tabs>
-                      <Tab text="Book Issue">
+                      <Tab fx:id="bookIssueTab" text="Book Issue">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -58,34 +58,38 @@
                                        <children>
                                           <HBox fx:id="book_info" alignment="CENTER" prefHeight="154.0" prefWidth="526.0">
                                              <children>
-                                                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
                                                    <image>
                                                       <Image url="@../icons/book_2.png" />
                                                    </image>
                                                 </ImageView>
-                                                <TextField fx:id="bookIdInput" onAction="#loadBookInfo" prefHeight="40.0" prefWidth="220.0" promptText="Enter Book Id" styleClass="text-field">
+                                                <TextField fx:id="bookIdInput" onAction="#loadBookInfo" prefHeight="40.0" prefWidth="220.0" promptText="Enter Book Id" styleClass="text-field" HBox.hgrow="NEVER">
                                                    <HBox.margin>
                                                       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                                    </HBox.margin>
                                                 </TextField>
-                                                <VBox alignment="CENTER" prefHeight="20.0" prefWidth="291.0">
+                                                <StackPane fx:id="bookInfoContainer">
                                                    <HBox.margin>
                                                       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                                    </HBox.margin>
                                                    <children>
-                                                      <Text fx:id="bookName" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" text="Book Name" textAlignment="CENTER" wrappingWidth="290.6866989135742" />
-                                                      <Text fx:id="bookAuthor" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" text="Author" textAlignment="CENTER" wrappingWidth="290.6866989135742">
-                                                         <VBox.margin>
-                                                            <Insets top="10.0" />
-                                                         </VBox.margin>
-                                                      </Text>
-                                                      <Text fx:id="bookStatus" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" text="Book Status" textAlignment="CENTER" wrappingWidth="290.6866989135742">
-                                                         <VBox.margin>
-                                                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                                                         </VBox.margin>
-                                                      </Text>
+                                                      <VBox alignment="CENTER" prefHeight="20.0" prefWidth="291.0">
+                                                         <children>
+                                                            <Text fx:id="bookName" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" textAlignment="CENTER" wrappingWidth="290.6866989135742" />
+                                                            <Text fx:id="bookAuthor" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" textAlignment="CENTER" wrappingWidth="290.6866989135742">
+                                                               <VBox.margin>
+                                                                  <Insets top="10.0" />
+                                                               </VBox.margin>
+                                                            </Text>
+                                                            <Text fx:id="bookStatus" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" textAlignment="CENTER" wrappingWidth="290.6866989135742">
+                                                               <VBox.margin>
+                                                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                                               </VBox.margin>
+                                                            </Text>
+                                                         </children>
+                                                      </VBox>
                                                    </children>
-                                                </VBox>
+                                                </StackPane>
                                              </children>
                                              <opaqueInsets>
                                                 <Insets />
@@ -96,29 +100,33 @@
                                           </HBox>
                                           <HBox fx:id="member_info" alignment="CENTER" prefHeight="141.0" prefWidth="526.0">
                                              <children>
-                                                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                                <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
                                                    <image>
                                                       <Image url="@../icons/member.png" />
                                                    </image>
                                                 </ImageView>
-                                                <TextField fx:id="memberIdInput" onAction="#loadMemberInformation" prefHeight="40.0" prefWidth="220.0" promptText="Enter Member Id">
+                                                <TextField fx:id="memberIdInput" onAction="#loadMemberInformation" prefHeight="40.0" prefWidth="220.0" promptText="Enter Member Id" HBox.hgrow="NEVER">
                                                    <HBox.margin>
                                                       <Insets bottom="20.0" left="20.0" right="39.0" top="20.0" />
                                                    </HBox.margin>
                                                 </TextField>
-                                                <VBox alignment="CENTER" prefHeight="20.0" prefWidth="291.0">
+                                                <StackPane fx:id="memberInfoContainer">
                                                    <HBox.margin>
                                                       <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                                                    </HBox.margin>
                                                    <children>
-                                                      <Text fx:id="memberName" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" text="Member Name" textAlignment="CENTER" wrappingWidth="290.6866989135742" />
-                                                      <Text fx:id="memberContact" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" text="Contract Information" textAlignment="CENTER" wrappingWidth="290.6866989135742">
-                                                         <VBox.margin>
-                                                            <Insets top="10.0" />
-                                                         </VBox.margin>
-                                                      </Text>
+                                                      <VBox alignment="CENTER" prefHeight="20.0" prefWidth="291.0">
+                                                         <children>
+                                                            <Text fx:id="memberName" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" textAlignment="CENTER" wrappingWidth="290.6866989135742" />
+                                                            <Text fx:id="memberContact" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-text" textAlignment="CENTER" wrappingWidth="290.6866989135742">
+                                                               <VBox.margin>
+                                                                  <Insets top="10.0" />
+                                                               </VBox.margin>
+                                                            </Text>
+                                                         </children>
+                                                      </VBox>
                                                    </children>
-                                                </VBox>
+                                                </StackPane>
                                              </children>
                                              <opaqueInsets>
                                                 <Insets />
@@ -153,7 +161,7 @@
                               <String fx:value="tab-label" />
                            </styleClass>
                       </Tab>
-                      <Tab text="Renew ">
+                      <Tab fx:id="renewTab" text="Renew ">
                         <content>
                           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                                  <children>
@@ -168,7 +176,7 @@
                                        <bottom>
                                           <HBox alignment="CENTER" prefHeight="42.0" prefWidth="466.0" BorderPane.alignment="CENTER">
                                              <children>
-                                                <Button mnemonicParsing="false" onAction="#loadRenew" prefHeight="38.0" prefWidth="136.0" text="Renew">
+                                                <Button fx:id="renewButton" mnemonicParsing="false" onAction="#loadRenew" prefHeight="38.0" prefWidth="136.0" text="Renew">
                                                    <HBox.margin>
                                                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                                    </HBox.margin>
@@ -180,7 +188,7 @@
                                                       </ImageView>
                                                    </graphic>
                                                 </Button>
-                                                <Button mnemonicParsing="false" onAction="#loadSubmission" prefHeight="38.0" prefWidth="138.0" text="Submission">
+                                                <Button fx:id="submissionButton" mnemonicParsing="false" onAction="#loadSubmission" prefHeight="38.0" prefWidth="138.0" text="Submission">
                                                    <HBox.margin>
                                                       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                                                    </HBox.margin>
@@ -205,17 +213,17 @@
                                                             <Image url="@../icons/member.png" />
                                                          </image>
                                                       </ImageView>
-                                                      <TextField fx:id="memberNameHolder" alignment="BOTTOM_CENTER" promptText="Member Name" styleClass="main-text-fields" stylesheets="@../../../../resources/dark-theme.css">
+                                                      <TextField fx:id="memberNameHolder" alignment="BOTTOM_CENTER" editable="false" promptText="Member Name" styleClass="main-text-fields" stylesheets="@../../../../resources/dark-theme.css">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>
                                                       </TextField>
-                                                      <TextField fx:id="memberEmailHolder" alignment="BOTTOM_CENTER" promptText="Member Email" styleClass="main-text-fields">
+                                                      <TextField fx:id="memberEmailHolder" alignment="BOTTOM_CENTER" editable="false" promptText="Member Email" styleClass="main-text-fields">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>
                                                       </TextField>
-                                                      <TextField fx:id="memberContactHolder" alignment="BOTTOM_CENTER" promptText="Member Contact" styleClass="main-text-fields">
+                                                      <TextField fx:id="memberContactHolder" alignment="BOTTOM_CENTER" editable="false" promptText="Member Contact" styleClass="main-text-fields">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>
@@ -229,17 +237,17 @@
                                                             <Image url="@../icons/book_2.png" />
                                                          </image>
                                                       </ImageView>
-                                                      <TextField fx:id="bookNameHolder" alignment="CENTER" promptText="Book Name" styleClass="main-text-fields">
+                                                      <TextField fx:id="bookNameHolder" alignment="CENTER" editable="false" promptText="Book Name" styleClass="main-text-fields">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>
                                                       </TextField>
-                                                      <TextField fx:id="bookAuthorHolder" alignment="CENTER" promptText="Book Author" styleClass="main-text-fields">
+                                                      <TextField fx:id="bookAuthorHolder" alignment="CENTER" editable="false" promptText="Book Author" styleClass="main-text-fields">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>
                                                       </TextField>
-                                                      <TextField fx:id="bookPublisherHolder" alignment="CENTER" promptText="Book Publisher" styleClass="main-text-fields">
+                                                      <TextField fx:id="bookPublisherHolder" alignment="CENTER" editable="false" promptText="Book Publisher" styleClass="main-text-fields">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>
@@ -253,17 +261,17 @@
                                                             <Image url="@../icons/issue.png" />
                                                          </image>
                                                       </ImageView>
-                                                      <TextField fx:id="issueDateHolder" alignment="CENTER" promptText="Issue Date" styleClass="main-text-fields">
+                                                      <TextField fx:id="issueDateHolder" alignment="CENTER" editable="false" promptText="Issue Date" styleClass="main-text-fields">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>
                                                       </TextField>
-                                                      <TextField fx:id="numberDaysHolder" alignment="CENTER" promptText="No. of Days" styleClass="main-text-fields">
+                                                      <TextField fx:id="numberDaysHolder" alignment="CENTER" editable="false" promptText="No. of Days" styleClass="main-text-fields">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>
                                                       </TextField>
-                                                      <TextField fx:id="fineInfoHolder" alignment="CENTER" promptText="Fine " styleClass="main-text-fields">
+                                                      <TextField fx:id="fineInfoHolder" alignment="CENTER" editable="false" promptText="Fine " styleClass="main-text-fields">
                                                          <VBox.margin>
                                                             <Insets bottom="20.0" left="10.0" right="10.0" top="20.0" />
                                                          </VBox.margin>

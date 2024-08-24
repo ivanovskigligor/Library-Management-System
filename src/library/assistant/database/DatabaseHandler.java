@@ -10,6 +10,9 @@ import java.sql.Statement;
 
 import javax.swing.JOptionPane;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
 import library.assistant.ui.listbooks.ListBooksController.Book;
 import library.assistant.ui.listmember.ListMembersController.Member;
 
@@ -42,9 +45,9 @@ public class DatabaseHandler {
 			Class.forName("org.apache.derby.jdbc.EmbeddedDriver");
 			conn = DriverManager.getConnection(DB_URL);
 		} catch (Exception e) {
-	        JOptionPane.showMessageDialog(null, "Can't load database: ", "Database Error", JOptionPane.ERROR_MESSAGE);
-			e.printStackTrace();  // Print stack trace for more details
-	        System.exit(0);
+			JOptionPane.showMessageDialog(null, "Can't load database: ", "Database Error", JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace(); // Print stack trace for more details
+			System.exit(0);
 		}
 	}
 
@@ -58,13 +61,9 @@ public class DatabaseHandler {
 			if (tables.next()) {
 				System.out.println("Table " + TABLE_NAME + " already exists.");
 			} else {
-				stmt.execute("CREATE TABLE " + TABLE_NAME + "(" 
-						+ " id varchar(200) PRIMARY KEY, \n"
-						+ " title varchar(200), \n" 
-						+ " author varchar(200), \n" 
-						+ " publisher varchar(200), \n"
-						+ " isAvail boolean DEFAULT true" 
-						+ " )");
+				stmt.execute("CREATE TABLE " + TABLE_NAME + "(" + " id varchar(200) PRIMARY KEY, \n"
+						+ " title varchar(200), \n" + " author varchar(200), \n" + " publisher varchar(200), \n"
+						+ " isAvail boolean DEFAULT true" + " )");
 				System.out.println("Table " + TABLE_NAME + " created successfully.");
 			}
 		} catch (SQLException e) {
@@ -78,7 +77,7 @@ public class DatabaseHandler {
 			}
 		}
 	}
-	
+
 	private void setupMemberTable() {
 		// TODO Auto-generated method stub
 		String TABLE_NAME = "MEMBER";
@@ -89,12 +88,8 @@ public class DatabaseHandler {
 			if (tables.next()) {
 				System.out.println("Table " + TABLE_NAME + " already exists.");
 			} else {
-				stmt.execute("CREATE TABLE " + TABLE_NAME + "(" 
-						+ " id varchar(200) PRIMARY KEY, \n"
-						+ " name varchar(200), \n" 
-						+ " mobile varchar(20), \n" 
-						+ " email varchar(100) \n"
-						+ " )");
+				stmt.execute("CREATE TABLE " + TABLE_NAME + "(" + " id varchar(200) PRIMARY KEY, \n"
+						+ " name varchar(200), \n" + " mobile varchar(20), \n" + " email varchar(100) \n" + " )");
 				System.out.println("Table " + TABLE_NAME + " created successfully.");
 			}
 		} catch (SQLException e) {
@@ -108,26 +103,22 @@ public class DatabaseHandler {
 			}
 		}
 	}
-	
+
 	private static void setupIssueTable() {
 
 		String TABLE_NAME = "ISSUE";
 		try {
 			stmt = conn.createStatement();
 			DatabaseMetaData dbm = conn.getMetaData();
-			
+
 			ResultSet tables = dbm.getTables(null, null, TABLE_NAME.toUpperCase(), null);
 			if (tables.next()) {
 				System.out.println("Table " + TABLE_NAME + " already exists.");
 			} else {
-				stmt.execute("CREATE TABLE " + TABLE_NAME + "("
-					    + "bookID varchar(200) PRIMARY KEY, \n"
-					    + "memberID varchar(200), \n"
-					    + "issueTime timestamp default CURRENT_TIMESTAMP, \n"
-					    + "renewCount integer default 0, \n"
-					    + "FOREIGN KEY (bookID) REFERENCES BOOK(id), \n"
-					    + "FOREIGN KEY (memberID) REFERENCES MEMBER(id) \n"
-					    + ")");
+				stmt.execute("CREATE TABLE " + TABLE_NAME + "(" + "bookID varchar(200) PRIMARY KEY, \n"
+						+ "memberID varchar(200), \n" + "issueTime timestamp default CURRENT_TIMESTAMP, \n"
+						+ "renewCount integer default 0, \n" + "FOREIGN KEY (bookID) REFERENCES BOOK(id), \n"
+						+ "FOREIGN KEY (memberID) REFERENCES MEMBER(id) \n" + ")");
 
 				System.out.println("Table " + TABLE_NAME + " created successfully.");
 			}
@@ -142,8 +133,8 @@ public class DatabaseHandler {
 			}
 		}
 	}
-	
-	public ResultSet execQuery(String query) {
+
+	public static ResultSet execQuery(String query) {
 		ResultSet result = null;
 		try {
 			stmt = conn.createStatement();
@@ -170,15 +161,15 @@ public class DatabaseHandler {
 		}
 
 	}
-	
+
 	public boolean deleteBook(Book book) {
-		
+
 		try {
 			String deleteStatement = "DELETE FROM BOOK WHERE ID = ?";
 			PreparedStatement stmt = conn.prepareStatement(deleteStatement);
-			stmt.setString(1, book.getId());		
+			stmt.setString(1, book.getId());
 			int res = stmt.executeUpdate();
-			if(res == 1) {
+			if (res == 1) {
 				return true;
 			}
 		} catch (SQLException e) {
@@ -194,23 +185,23 @@ public class DatabaseHandler {
 			PreparedStatement stmt = conn.prepareStatement(issuedStatement);
 			stmt.setString(1, book.getId());
 			ResultSet rs = stmt.executeQuery();
-			if(rs.next()) {
+			if (rs.next()) {
 				int count = rs.getInt(1);
 				System.out.println(count);
-				if(count>0) {
+				if (count > 0) {
 					return true;
 				} else {
 					return false;
 				}
 			}
-			
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
-	
+
 	public boolean updateBook(Book book) {
 		String update = "UPDATE BOOK SET TITLE = ?, AUTHOR = ?, PUBLISHER =? WHERE ID = ?";
 		try {
@@ -220,16 +211,16 @@ public class DatabaseHandler {
 			stmt.setString(3, book.getPublisher());
 			stmt.setString(4, book.getId());
 			int res = stmt.executeUpdate();
-			
-			return (res==1);
-			
+
+			return (res == 1);
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
-	
+
 	public boolean updateMember(Member member) {
 		String update = "UPDATE MEMBER SET NAME = ?, MOBILE = ?, EMAIL =? WHERE ID = ?";
 		try {
@@ -239,13 +230,76 @@ public class DatabaseHandler {
 			stmt.setString(3, member.getEmail());
 			stmt.setString(4, member.getId());
 			int res = stmt.executeUpdate();
-			
-			return (res==1);
-			
+
+			return (res == 1);
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
 	}
+
+	public static ObservableList<PieChart.Data> bookGraphStatistics() {
+
+		ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+
+		
+		try {
+			String query1 = "SELECT COUNT(*) FROM BOOK";
+			String query2 = "SELECT COUNT(*) FROM ISSUE";
+			ResultSet rs = execQuery(query1);
+			
+			if (rs.next()) {
+				int count = rs.getInt(1);
+				data.add(new PieChart.Data("Total Books(" + count + ")", count));
+
+			}
+
+			rs = execQuery(query2);
+			if (rs.next()) {
+				int count = rs.getInt(1);
+				data.add(new PieChart.Data("Issued Books(" + count + ")", count));
+
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return data;
+
+	}
+	
+	public static ObservableList<PieChart.Data> memberGraphStatistics() {
+
+		ObservableList<PieChart.Data> data = FXCollections.observableArrayList();
+
+		
+		try {
+			String query1 = "SELECT COUNT(*) FROM MEMBER";
+			String query2 = "SELECT COUNT(DISTINCT memberID) FROM ISSUE";
+			ResultSet rs = execQuery(query1);
+			
+			if (rs.next()) {
+				int count = rs.getInt(1);
+				data.add(new PieChart.Data("Total Members(" + count + ")", count));
+
+			}
+
+			rs = execQuery(query2);
+			if (rs.next()) {
+				int count = rs.getInt(1);
+				data.add(new PieChart.Data("Issued to members(" + count + ")", count));
+
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return data;
+
+	}
+	
 }

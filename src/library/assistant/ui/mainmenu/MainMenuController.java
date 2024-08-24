@@ -1,20 +1,18 @@
 
 package library.assistant.ui.mainmenu;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
 
 import javafx.event.Event;
+import javafx.event.EventHandler;
+
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Array;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -32,11 +30,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.MouseEvent;
@@ -47,14 +47,26 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
+import library.assistant.alert.AlertMaker;
 import library.assistant.database.DatabaseHandler;
 import library.assistant.util.LibraryAssistantUtil;
 
 public class MainMenuController implements Initializable {
 
 	@FXML
+	private Button renewButton;
+
+	@FXML
+	private Button submissionButton;
+
+	@FXML
 	private BorderPane rootBorderPane;
+
+	@FXML
+	private StackPane bookInfoContainer;
+
+	@FXML
+	private StackPane memberInfoContainer;
 	
 	@FXML
 	private Text bookAuthor;
@@ -124,21 +136,36 @@ public class MainMenuController implements Initializable {
 
 	@FXML
 	private HBox submissionDataContainer;
+	
+	@FXML
+	private Tab bookIssueTab;
+	
+	@FXML
+	private Tab renewTab;
+	
 	@FXML
 	private ListView<String> issueDataList;
 
 	DatabaseHandler databaseHandler;
 
 	Boolean readyForSubmission = false;
+	
+	PieChart bookPieChart;
+	PieChart memberPieChart;
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		// TODO Auto-generated method stub
 		JFXDepthManager.setDepth(book_info, 1);
 		JFXDepthManager.setDepth(member_info, 1);
+		
 		databaseHandler = DatabaseHandler.getInstance();
+		
 		initDrawer();
+		initGraphs();
 	}
+
+
 
 	@FXML
 	void handleMenuClose(ActionEvent event) {
@@ -154,13 +181,19 @@ public class MainMenuController implements Initializable {
 
 	@FXML
 	void loadBookInfo(ActionEvent event) {
+		
+		
 		clearBookCache();
-		String id = bookIdInput.getText();
-		String query = "SELECT * FROM BOOK WHERE id = '" + id + "'";
-		System.out.println(query);
-		ResultSet result = databaseHandler.execQuery(query);
+		
+		graphContainerHandler(false);
+		
+		
 		boolean flag = false;
 		try {
+			String id = bookIdInput.getText();
+			String query = "SELECT * FROM BOOK WHERE id = '" + id + "'";
+			System.out.println(query);
+			ResultSet result = DatabaseHandler.execQuery(query);
 			while (result.next()) {
 				String bName = result.getString("title");
 				String bAuthor = result.getString("author");
@@ -181,17 +214,21 @@ public class MainMenuController implements Initializable {
 
 	@FXML
 	public void loadBookInfo2(ActionEvent event) {
-		readyForSubmission = false;
-		String id = bookID.getText();
-		String query = "SELECT ISSUE.bookID, ISSUE.memberID, ISSUE.issueTime, ISSUE.renewCount, "
-				+ "MEMBER.name, MEMBER.mobile, MEMBER.email, "
-				+ "BOOK.title, BOOK.author, BOOK.publisher, BOOK.isAvail " + "FROM ISSUE "
-				+ "LEFT JOIN MEMBER ON ISSUE.memberID = MEMBER.ID " + "LEFT JOIN BOOK ON ISSUE.bookID = BOOK.ID "
-				+ "WHERE ISSUE.bookID = '" + id + "'";
 
-		ResultSet result = databaseHandler.execQuery(query);
+		clearEntries();
+		readyForSubmission = false;
 
 		try {
+
+			String id = bookID.getText();
+			String query = "SELECT ISSUE.bookID, ISSUE.memberID, ISSUE.issueTime, ISSUE.renewCount, "
+					+ "MEMBER.name, MEMBER.mobile, MEMBER.email, "
+					+ "BOOK.title, BOOK.author, BOOK.publisher, BOOK.isAvail " + "FROM ISSUE "
+					+ "LEFT JOIN MEMBER ON ISSUE.memberID = MEMBER.ID " + "LEFT JOIN BOOK ON ISSUE.bookID = BOOK.ID "
+					+ "WHERE ISSUE.bookID = '" + id + "'";
+
+			ResultSet result = DatabaseHandler.execQuery(query);
+			
 			if (result.next()) {
 				memberNameHolder.setText(result.getString("name"));
 				memberContactHolder.setText(result.getString("mobile"));
@@ -209,26 +246,15 @@ public class MainMenuController implements Initializable {
 				Long DaysElapsed = TimeUnit.DAYS.convert(timeElapsed, TimeUnit.MILLISECONDS);
 				numberDaysHolder.setText(DaysElapsed.toString());
 				readyForSubmission = true;
+				controlsHandler(true);
+				submissionDataContainer.setOpacity(1);
 			} else {
 
-				BoxBlur blur = new BoxBlur(3,3,3);
-				JFXDialogLayout dialogLayout = new JFXDialogLayout();
-				JFXDialog dialog = new JFXDialog(rootPane, dialogLayout, JFXDialog.DialogTransition.CENTER);
-				dialogLayout.setHeading(new Label("Book is not issued"));
-				
 				Button button = new Button("Okay");
-				button.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent mouseEvent)-> {
 
-					rootBorderPane.setEffect(null);
-					dialog.close();
-				});
-				dialogLayout.setActions(button);
-				dialog.show();
-				dialog.setOnDialogClosed((Event event1) ->{
-					rootBorderPane.setEffect(null);
-				});
-				rootBorderPane.setEffect(blur);
-				
+				AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button),
+						"Book has not been issued", null);
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace(); // Log the exception to see what went wrong
@@ -236,15 +262,50 @@ public class MainMenuController implements Initializable {
 
 	}
 
+	private void clearEntries() {
+
+		memberNameHolder.setText("");
+		memberContactHolder.setText("");
+		memberEmailHolder.setText("");
+
+		bookNameHolder.setText("");
+		bookAuthorHolder.setText("");
+		bookPublisherHolder.setText("");
+
+		issueDateHolder.setText("");
+		numberDaysHolder.setText("");
+		fineInfoHolder.setText("");
+
+		controlsHandler(false);
+		submissionDataContainer.setOpacity(0);
+	}
+
+	private void controlsHandler(Boolean enableFlag) {
+
+		if (enableFlag) {
+			renewButton.setDisable(false);
+			submissionButton.setDisable(false);
+
+		} else {
+			renewButton.setDisable(true);
+			submissionButton.setDisable(true);
+		}
+	}
+
 	@FXML
 	void loadMemberInformation(ActionEvent event) {
+		
 		clearMemberCache();
-		String id = memberIdInput.getText();
-		String query = "SELECT * FROM MEMBER WHERE id = '" + id + "'";
-		System.out.println(query);
-		ResultSet result = databaseHandler.execQuery(query);
+
+		graphContainerHandler(false);
+		
+		
 		boolean flag = false;
 		try {
+			String id = memberIdInput.getText();
+			String query = "SELECT * FROM MEMBER WHERE id = '" + id + "'";
+			System.out.println(query);
+			ResultSet result = DatabaseHandler.execQuery(query);
 			while (result.next()) {
 				String mName = result.getString("name");
 				String mContact = result.getString("mobile");
@@ -264,15 +325,10 @@ public class MainMenuController implements Initializable {
 	void loadIssue(ActionEvent event) {
 		String memberID = memberIdInput.getText();
 		String bookID = bookIdInput.getText();
+		
+		Button confirmButton = new Button("Yes!");
+		confirmButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
 
-		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setTitle("Confirm Operation");
-		alert.setHeaderText(null);
-		alert.setContentText("Are you sure you want to issue the book " + bookName.getText() + "\n to "
-				+ memberName.getText() + " ?");
-		Optional<ButtonType> response = alert.showAndWait();
-
-		if (response.get() == ButtonType.OK) {
 			// Corrected query
 			String query = "INSERT INTO ISSUE(memberID, bookID) VALUES (" + "'" + memberID + "', " + "'" + bookID
 					+ "')";
@@ -280,125 +336,161 @@ public class MainMenuController implements Initializable {
 			String query2 = "UPDATE BOOK SET isAvail = false WHERE id = '" + bookID + "'";
 
 			if (databaseHandler.execAction(query) && databaseHandler.execAction(query2)) {
-				Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-				alert1.setTitle("Success");
-				alert1.setHeaderText(null);
-				alert1.setContentText("Book Issue Complete!");
-				alert1.showAndWait();
+
+				Button button = new Button("Done!");
+
+				AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button),
+						"Book Issue Complete!", null);
+				refreshGraphs();
+
 			} else {
-				Alert alert1 = new Alert(Alert.AlertType.ERROR);
-				alert1.setTitle("Failed");
-				alert1.setHeaderText(null);
-				alert1.setContentText("Book Issue Failed!");
-				alert1.showAndWait();
+				Button button = new Button("Yes");
+
+				AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button),
+						"Book Issue Failed!", null);
 			}
-		} else {
-			Alert alert1 = new Alert(Alert.AlertType.ERROR);
-			alert1.setTitle("Canceled");
-			alert1.setHeaderText(null);
-			alert1.setContentText("Canceled!");
-			alert1.showAndWait();
-		}
+			clearIssueEntries();
+		});
+		
+		Button declineButton = new Button("No!");
+		declineButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+			Button button = new Button("Cancel");
+
+			AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button),
+					"Book Issue Canceled!", null);
+			clearIssueEntries();
+		});
+		
+		
+		AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(confirmButton, declineButton),"Confirm Issue", "Are you sure you want to issue the book " + bookName.getText() + " to "
+				+  memberName.getText() + " ?");
+
 	}
 
 	@FXML
 	void loadSubmission(ActionEvent event) {
 
+		
 		if (!readyForSubmission) {
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Failed");
-			alert.setHeaderText(null);
-			alert.setContentText("Please select book to submit");
-			alert.showAndWait();
+			
+			Button button = new Button("Okay!");
+			AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button), "Please select a book!", null);	
 			return;
 		}
-		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setTitle("Confirm Operation");
-		alert.setHeaderText(null);
-		alert.setContentText("Are you sure you want to return the book?");
+		
+		Button confirmButton = new Button("Yes!");
+		confirmButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
 
-		Optional<ButtonType> response = alert.showAndWait();
 
-		if (response.get() == ButtonType.OK) {
 			String id = bookID.getText();
 			String acl = "DELETE FROM ISSUE WHERE BOOKID = '" + id + "'";
 			String acl1 = "UPDATE BOOK SET isAvail = TRUE WHERE id = '" + id + "'";
+			
 			if (databaseHandler.execAction(acl) && databaseHandler.execAction(acl1)) {
-				Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-				alert1.setTitle("Success");
-				alert1.setHeaderText(null);
-				alert1.setContentText("Book Has Been Submitted");
-				alert1.showAndWait();
-			} else {
-				Alert alert1 = new Alert(Alert.AlertType.ERROR);
-				alert1.setTitle("Failed");
-				alert1.setHeaderText(null);
-				alert1.setContentText("Submmition has failed");
-				alert1.showAndWait();
-			}
-		} else if (response.get() == ButtonType.CANCEL) {
-			Alert alert1 = new Alert(Alert.AlertType.ERROR);
-			alert1.setTitle("Failed");
-			alert1.setHeaderText(null);
-			alert1.setContentText("Canceled");
-			alert1.showAndWait();
-		}
+				
+				Button button = new Button("Done!");
+				AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button), "Book Has Been Submitted", null);
 
+				controlsHandler(false);
+				submissionDataContainer.setOpacity(0);
+				
+			} else {
+				
+				Button button = new Button("Okay!");
+				AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button), "Submmition has failed", null);
+
+
+			}	
+		});
+		
+		Button declineButton = new Button("No!");
+		declineButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+
+
+			Button button = new Button("Okay!");
+			AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button), "Submmition cancelled", null);
+			
+		});
+		
+		AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(confirmButton, declineButton), "Confirm Submission", "Are you sure you want to return this book?");
+
+		
 	}
 
 	@FXML
 	void loadRenew(ActionEvent event) {
 
 		if (!readyForSubmission) {
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle("Failed");
-			alert.setHeaderText(null);
-			alert.setContentText("Please select book to renew");
-			alert.showAndWait();
+			
+			Button button = new Button("Okay!");
+			AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button), "Please select a book!", null);	
+			
 			return;
 		}
 
-		Alert alert = new Alert(Alert.AlertType.INFORMATION);
-		alert.setTitle("Confirm Operation");
-		alert.setHeaderText(null);
-		alert.setContentText("Are you sure you want to renew the book?");
+		
 
-		Optional<ButtonType> response = alert.showAndWait();
-
-		if (response.get() == ButtonType.OK) {
-			String ac = "UPDATE ISSUE SET issueTime = CURRENT_TIMESTAMP, renewCount = renewCount+1 WHERE bookID = '"
+		Button confirmButton = new Button("Yes!");
+		confirmButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+			
+			String ac = "UPDATE ISSUE SET issueTime = CURRENT_TIMESTAMP, renewCount = renewCount + 1 WHERE bookID = '"
 					+ bookID.getText() + "'";
-			System.out.println(ac);
+			
 			if (databaseHandler.execAction(ac)) {
-				Alert alert1 = new Alert(Alert.AlertType.INFORMATION);
-				alert1.setTitle("Success");
-				alert1.setHeaderText(null);
-				alert1.setContentText("Book Has Been Renewed");
-				alert1.showAndWait();
+				
+				Button button = new Button("Done!");
+				AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button), "Book Has Been Renewed", null);
+				controlsHandler(false);
+				submissionDataContainer.setOpacity(0);
+				
 			} else {
-				Alert alert1 = new Alert(Alert.AlertType.ERROR);
-				alert1.setTitle("Failed");
-				alert1.setHeaderText(null);
-				alert1.setContentText("Renew has failed");
-				alert1.showAndWait();
-			}
 
-		}
+				Button button = new Button("Okay!");
+				AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button), "Submmition has failed", null);
+			}
+		});
+		
+		Button declineButton = new Button("No!");
+		declineButton.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent event1) -> {
+
+
+			Button button = new Button("Okay!");
+			AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(button), "Renewal cancelled", null);
+			
+		});
+	
+		AlertMaker.showMaterialDialog(rootPane, rootBorderPane, Arrays.asList(confirmButton, declineButton), "Confirm Renewal", "Are you sure you want to renew this book?");
+
 	}
 
-	void clearBookCache() {
+	private void clearBookCache() {
 
 		bookName.setText("");
 		bookAuthor.setText("");
 		bookStatus.setText("");
 	}
 
-	void clearMemberCache() {
+	private void clearMemberCache() {
 
 		memberName.setText("");
 		memberContact.setText("");
 	}
 
+	private void clearIssueEntries() {
+		
+		bookIdInput.clear();
+		memberIdInput.clear();
+		
+		bookName.setText("");
+		bookAuthor.setText("");
+		bookStatus.setText("");
+		
+		memberName.setText("");
+		memberContact.setText("");
+
+		graphContainerHandler(true);
+	}
+	
 	void loadWindow(String loc, String title) {
 		try {
 			Parent parent = FXMLLoader.load(getClass().getResource(loc));
@@ -438,6 +530,43 @@ public class MainMenuController implements Initializable {
 			}
 
 		});
+	}
+	
+	private void initGraphs() {
+
+		bookPieChart = new PieChart(DatabaseHandler.bookGraphStatistics());
+		bookInfoContainer.getChildren().add(bookPieChart);
+
+		memberPieChart = new PieChart(DatabaseHandler.memberGraphStatistics());
+		memberInfoContainer.getChildren().add(memberPieChart);
+		
+		bookIssueTab.setOnSelectionChanged(new EventHandler<Event>(){
+			@Override
+			public void handle(Event event) {
+				
+				clearIssueEntries();
+				if(bookIssueTab.isSelected()) {
+					refreshGraphs();
+				}
+			}
+		});
+	}
+	
+	private void refreshGraphs() {
+		
+		bookPieChart.setData(DatabaseHandler.bookGraphStatistics());
+		memberPieChart.setData(DatabaseHandler.memberGraphStatistics());
+		
+	}
+	private void graphContainerHandler(Boolean status) {
+		
+		if(status) {
+			bookPieChart.setOpacity(1);
+			memberPieChart.setOpacity(1);
+		} else {
+			bookPieChart.setOpacity(0);
+			memberPieChart.setOpacity(0);
+		}
 	}
 
 }
