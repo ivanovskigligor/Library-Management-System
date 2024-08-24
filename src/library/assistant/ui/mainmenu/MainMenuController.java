@@ -1,7 +1,6 @@
 
 package library.assistant.ui.mainmenu;
 
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,9 +15,13 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXDrawer;
 import com.jfoenix.controls.JFXHamburger;
 import com.jfoenix.effects.JFXDepthManager;
@@ -30,10 +33,14 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -47,76 +54,79 @@ import library.assistant.util.LibraryAssistantUtil;
 public class MainMenuController implements Initializable {
 
 	@FXML
-    private Text bookAuthor;
+	private BorderPane rootBorderPane;
+	
+	@FXML
+	private Text bookAuthor;
 
-    @FXML
-    private TextField bookAuthorHolder;
+	@FXML
+	private TextField bookAuthorHolder;
 
-    @FXML
-    private TextField bookID;
+	@FXML
+	private TextField bookID;
 
-    @FXML
-    private TextField bookIdInput;
+	@FXML
+	private TextField bookIdInput;
 
-    @FXML
-    private Text bookName;
+	@FXML
+	private Text bookName;
 
-    @FXML
-    private TextField bookNameHolder;
+	@FXML
+	private TextField bookNameHolder;
 
-    @FXML
-    private TextField bookPublisherHolder;
+	@FXML
+	private TextField bookPublisherHolder;
 
-    @FXML
-    private Text bookStatus;
+	@FXML
+	private Text bookStatus;
 
-    @FXML
-    private HBox book_info;
+	@FXML
+	private HBox book_info;
 
-    @FXML
-    private JFXDrawer drawer;
+	@FXML
+	private JFXDrawer drawer;
 
-    @FXML
-    private TextField fineInfoHolder;
+	@FXML
+	private TextField fineInfoHolder;
 
-    @FXML
-    private JFXHamburger hamburger;
+	@FXML
+	private JFXHamburger hamburger;
 
-    @FXML
-    private TextField issueDateHolder;
+	@FXML
+	private TextField issueDateHolder;
 
-    @FXML
-    private Text memberContact;
+	@FXML
+	private Text memberContact;
 
-    @FXML
-    private TextField memberContactHolder;
+	@FXML
+	private TextField memberContactHolder;
 
-    @FXML
-    private TextField memberEmailHolder;
+	@FXML
+	private TextField memberEmailHolder;
 
-    @FXML
-    private TextField memberIdInput;
+	@FXML
+	private TextField memberIdInput;
 
-    @FXML
-    private Text memberName;
+	@FXML
+	private Text memberName;
 
-    @FXML
-    private TextField memberNameHolder;
+	@FXML
+	private TextField memberNameHolder;
 
-    @FXML
-    private HBox member_info;
+	@FXML
+	private HBox member_info;
 
-    @FXML
-    private TextField numberDaysHolder;
+	@FXML
+	private TextField numberDaysHolder;
 
-    @FXML
-    private StackPane rootPane;
+	@FXML
+	private StackPane rootPane;
 
-    @FXML
-    private HBox submissionDataContainer;
+	@FXML
+	private HBox submissionDataContainer;
 	@FXML
 	private ListView<String> issueDataList;
-	
+
 	DatabaseHandler databaseHandler;
 
 	Boolean readyForSubmission = false;
@@ -130,23 +140,18 @@ public class MainMenuController implements Initializable {
 		initDrawer();
 	}
 
-
-
-
+	@FXML
+	void handleMenuClose(ActionEvent event) {
+		((Stage) rootPane.getScene().getWindow()).close();
+	}
 
 	@FXML
-    void handleMenuClose(ActionEvent event) {
-		((Stage)rootPane.getScene().getWindow()).close();
-    }
-	
-	@FXML
-    void handleMenuFullScreen(ActionEvent event) {
-		
-		Stage stage = (Stage)rootPane.getScene().getWindow();
+	void handleMenuFullScreen(ActionEvent event) {
+
+		Stage stage = (Stage) rootPane.getScene().getWindow();
 		stage.setFullScreen(!stage.isFullScreen());
-    }
-	
-	
+	}
+
 	@FXML
 	void loadBookInfo(ActionEvent event) {
 		clearBookCache();
@@ -177,54 +182,58 @@ public class MainMenuController implements Initializable {
 	@FXML
 	public void loadBookInfo2(ActionEvent event) {
 		readyForSubmission = false;
-		ObservableList<String> issueData = FXCollections.observableArrayList();
 		String id = bookID.getText();
-		String query = "SELECT * FROM ISSUE WHERE bookID = '" + id + "'";
+		String query = "SELECT ISSUE.bookID, ISSUE.memberID, ISSUE.issueTime, ISSUE.renewCount, "
+				+ "MEMBER.name, MEMBER.mobile, MEMBER.email, "
+				+ "BOOK.title, BOOK.author, BOOK.publisher, BOOK.isAvail " + "FROM ISSUE "
+				+ "LEFT JOIN MEMBER ON ISSUE.memberID = MEMBER.ID " + "LEFT JOIN BOOK ON ISSUE.bookID = BOOK.ID "
+				+ "WHERE ISSUE.bookID = '" + id + "'";
+
 		ResultSet result = databaseHandler.execQuery(query);
 
 		try {
-			while (result.next()) {
-				String mBookID = id;
-				String mMemberID = result.getString("memberID");
+			if (result.next()) {
+				memberNameHolder.setText(result.getString("name"));
+				memberContactHolder.setText(result.getString("mobile"));
+				memberEmailHolder.setText(result.getString("email"));
+
+				bookNameHolder.setText(result.getString("title"));
+				bookAuthorHolder.setText(result.getString("author"));
+				bookPublisherHolder.setText(result.getString("author"));
+
 				Timestamp mIssueTime = result.getTimestamp("issueTime");
-				int mRenewCount = result.getInt("renewCount");
+				Date dateOfIssue = new Date(mIssueTime.getTime());
+				issueDateHolder.setText(dateOfIssue.toString());
 
-				// Format the Timestamp
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-						.withZone(ZoneId.systemDefault());
-				String issueTimeFormatted = formatter.format(Instant.ofEpochMilli(mIssueTime.getTime()));
+				Long timeElapsed = System.currentTimeMillis() - mIssueTime.getTime();
+				Long DaysElapsed = TimeUnit.DAYS.convert(timeElapsed, TimeUnit.MILLISECONDS);
+				numberDaysHolder.setText(DaysElapsed.toString());
+				readyForSubmission = true;
+			} else {
 
-				issueData.add("Issue Date and Time: " + issueTimeFormatted);
-				issueData.add("Renew Count: " + mRenewCount);
+				BoxBlur blur = new BoxBlur(3,3,3);
+				JFXDialogLayout dialogLayout = new JFXDialogLayout();
+				JFXDialog dialog = new JFXDialog(rootPane, dialogLayout, JFXDialog.DialogTransition.CENTER);
+				dialogLayout.setHeading(new Label("Book is not issued"));
+				
+				Button button = new Button("Okay");
+				button.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent mouseEvent)-> {
 
-				issueData.add("Book Information:- ");
-				query = "SELECT * FROM BOOK WHERE id = '" + mBookID + "'";
-				try (ResultSet rs = databaseHandler.execQuery(query)) {
-					while (rs.next()) {
-						issueData.add("Book Name: " + rs.getString("title"));
-						issueData.add("Book ID: " + rs.getString("id"));
-						issueData.add("Book Author: " + rs.getString("author"));
-						issueData.add("Book Publisher: " + rs.getString("publisher"));
-					}
-				}
-
-				query = "SELECT * FROM MEMBER WHERE id = '" + mMemberID + "'";
-				try (ResultSet rs = databaseHandler.execQuery(query)) {
-					issueData.add("Member Information:- ");
-					while (rs.next()) {
-						issueData.add("Name: " + rs.getString("name"));
-						issueData.add("Contact Information: " + rs.getString("mobile"));
-						issueData.add("Email: " + rs.getString("email"));
-					}
-
-					readyForSubmission = true;
-				}
+					rootBorderPane.setEffect(null);
+					dialog.close();
+				});
+				dialogLayout.setActions(button);
+				dialog.show();
+				dialog.setOnDialogClosed((Event event1) ->{
+					rootBorderPane.setEffect(null);
+				});
+				rootBorderPane.setEffect(blur);
+				
 			}
 		} catch (SQLException e) {
 			e.printStackTrace(); // Log the exception to see what went wrong
 		}
 
-		javafx.application.Platform.runLater(() -> issueDataList.getItems().setAll(issueData));
 	}
 
 	@FXML
@@ -403,30 +412,32 @@ public class MainMenuController implements Initializable {
 			e.printStackTrace();
 		}
 	}
+
 	private void initDrawer() {
 		try {
-			VBox toolbar = FXMLLoader.load(getClass().getResource("/library/assistant/ui/mainmenu/toolbar/Toolbar.fxml"));
+			VBox toolbar = FXMLLoader
+					.load(getClass().getResource("/library/assistant/ui/mainmenu/toolbar/Toolbar.fxml"));
 			drawer.setSidePane(toolbar);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} 
+		}
 		HamburgerSlideCloseTransition task = new HamburgerSlideCloseTransition(hamburger);
 		task.setRate(-1);
 		hamburger.addEventHandler(MouseEvent.MOUSE_CLICKED, (Event e) -> {
 
-				// animation
-				task.setRate(task.getRate() * -1);
-				task.play();
-				System.out.println(drawer.isClosed());
-				if(drawer.isClosed()) {
-					drawer.open();
-					drawer.setMinWidth(100);
-				} else {
-					drawer.close();
-				}
-				
-			
+			// animation
+			task.setRate(task.getRate() * -1);
+			task.play();
+			System.out.println(drawer.isClosed());
+			if (drawer.isClosed()) {
+				drawer.open();
+				drawer.setMinWidth(100);
+			} else {
+				drawer.close();
+			}
+
 		});
 	}
+
 }

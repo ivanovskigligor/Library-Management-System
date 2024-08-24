@@ -53,6 +53,7 @@
 
 /*TablPane styling*/
 .tab{
+
     -fx-background-color: -fx-primary;
     -fx-pref-width: 260;
     -fx-pref-height: 50;
