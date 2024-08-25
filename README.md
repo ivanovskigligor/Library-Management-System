@@ -1,22 +1,31 @@
-<<<<<<< HEAD
-## Getting Started
+# Library Management System
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+This is a simple library management system written in Java. It provides some functionalities to manage books and members in a library. The system includes features for book and member management, book issuance, renewals, and graphical representation of data.
 
-## Folder Structure
+## Features
 
-The workspace contains two folders by default, where:
+- **Manage Books and Members:**
+  - **Add**, **delete**, and **update** book and member details.
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+- **Book Issuance:**
+  - Issue books to members.
+  - **Renew** books after a specified number of days.
+  - **Return** books to the system upon submission.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+- **Graphical Representation:**
+  - View a simple graphical representation of:
+    - All books and their issuance status.
+    - Issued books vs. total books.
+    - Number of members vs. issued books.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+## Libraries Used
 
-## Dependency Management
+- **JavaFX:** For creating the graphical user interface.
+- **Apache Derby:** For the embedded database to store book and member information.
+- **Gson:** For parsing and handling JSON data.
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
-=======
-# Library-Management-System
->>>>>>> 09a2200bb6834e622befbea27a1a4b24452f6f2b
+## Regular Login
+
+The system uses the following default credentials for regular login:
+- **Username:** `admin`
+- **Password:** `admin`
