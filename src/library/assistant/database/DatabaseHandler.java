@@ -179,6 +179,22 @@ public class DatabaseHandler {
 		return false;
 	}
 
+	public boolean deleteMember(Member member) {
+
+		try {
+			String deleteStatement = "DELETE FROM MEMBER WHERE ID = ?";
+			PreparedStatement stmt = conn.prepareStatement(deleteStatement);
+			stmt.setString(1, member.getId());
+			int res = stmt.executeUpdate();
+			if (res == 1) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 	public boolean isBookAlreadyIssued(Book book) {
 		try {
 			String issuedStatement = "SELECT COUNT(*) FROM ISSUE WHERE bookid = ?";

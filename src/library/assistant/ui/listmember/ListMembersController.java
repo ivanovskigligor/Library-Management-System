@@ -129,6 +129,34 @@ public class ListMembersController implements Initializable {
 	}
 
 	@FXML
+	void handleMemberDelete(ActionEvent event) {
+		Member selectedForDeletion = tableView.getSelectionModel().getSelectedItem();
+		if(selectedForDeletion == null) {
+			AlertMaker.showErrorMessage("No member selected", "Please select member");
+			return;
+		}
+		
+		
+		
+		Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		alert.setTitle("Delete Member");
+		alert.setContentText("Are you sure you want to delete this member " + selectedForDeletion.getName() + " ? ");
+		Optional<ButtonType> answer = alert.showAndWait();
+		if(answer.get() == ButtonType.OK) {
+			Boolean result = DatabaseHandler.getInstance().deleteMember(selectedForDeletion);
+			if(result) {
+				AlertMaker.showSimpleAlert("Member deleted", selectedForDeletion.getName() + " was deleted successfuly");
+				list.remove(selectedForDeletion);
+				
+			} else {
+				AlertMaker.showSimpleAlert("Failed. ", selectedForDeletion.getName() + " could not be deleted");
+			}
+		} else {
+			AlertMaker.showSimpleAlert("Deletion cancelled", "Process cancelled");
+		}
+	}
+	
+	@FXML
 	private void handleMemberEdit(ActionEvent event) {
 		Member selectedForEdit = tableView.getSelectionModel().getSelectedItem();
 		if(selectedForEdit == null) {
